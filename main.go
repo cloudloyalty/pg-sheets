@@ -39,8 +39,6 @@ func main() {
 
 	flag.Parse()
 
-	fmt.Printf("flags=%v\n", flags)
-
 	dbh, err := sql.Open("postgres", flags.DSN)
 	if err != nil {
 		log.Fatalf("Unable to open database connection: %v", err)
