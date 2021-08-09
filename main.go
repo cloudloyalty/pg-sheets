@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"strconv"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -191,6 +192,8 @@ func makeCell(v interface{}) *sheets.CellData {
 	}
 
 	switch v := v.(type) {
+	case nil:
+		return toStringValue("")
 	case string:
 		return toStringValue(v)
 	case int:
@@ -206,6 +209,13 @@ func makeCell(v interface{}) *sheets.CellData {
 		base := time.Date(2000, 1, 1, 0, 0, 0, 0, v.Location())
 		days := float64(v.Unix()-base.Unix()) / 86400
 		return toNumberValue(days + 36526) // 36526 is the serial number for 01.01.2000
+	case []byte:
+		f, err := strconv.ParseFloat(string(v), 64)
+		if err != nil {
+			return toStringValue(string(v))
+		} else {
+			return toNumberValue(f)
+		}
 	default:
 		return toStringValue(fmt.Sprintf("unparsed: %T", v))
 	}
